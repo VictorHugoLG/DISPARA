@@ -2,7 +2,7 @@
 * Desenvolvido por Lucas Teixeira Rocha.     *
 *                                            *
 * Com a colaboração de: Ricel de Souza Leite,*
-* Robson Ataíde, Mauro Andrade, Maurício     *
+* Robson Ataide, Mauro Andrade, Mauricio     *
 * Andrade e Anderson Pereira.                *
 *                                            *
 * Esquerdos autorais desde 2013.             *
