@@ -1,7 +1,7 @@
 **********************************************
 * Desenvolvido por Lucas Teixeira Rocha.     *
 *                                            *
-* Com a colaboração de: Ricel de Souza Leite,*
+* Com a colaboracao de: Ricel de Souza Leite,*
 * Robson Ataide, Mauro Andrade, Mauricio     *
 * Andrade e Anderson Pereira.                *
 *                                            *
