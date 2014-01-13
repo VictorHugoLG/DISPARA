@@ -1,0 +1,22 @@
+1- Crie o banco de dados e o usuário que serão utlizados pelo Comunique.
+
+2- Garanta as permissões CRUD (create, read, update e delete) no banco criado para o usuário que será utlizado.
+
+3- Insira as configurações do banco de dados nas linhas 51, 52, 53 e 54 do arquivo comunique/application/config/database.php.
+
+4- Faça o upload da pasta comunique para o servidor web e garanta permissão de escrita para o usuário do Apache na mesma.
+
+5- Acesse o script http://SEU_SERVIDOR/comunique/install.php?user=USUARIO_PARA_O_COMUNIQUE&password=SENHA_PARA_O_COMUNIQUE para criar a estrutura do banco de dados.
+
+6- Acesse http://SEU_SERVIDOR/comunique/, faça login com o usuário cadastrado no passo anterior.
+
+7- Configure a conta de e-mail que será utlizada pelo Comunique (menu Configuração SMTP).
+
+8- Instale o lynx ("apt-get install lynx" em distribuições baseadas no Debian).
+
+9- Crie a seguinte linha no crontab, substituindo o 15 pelo intervalo desejado entre os disparos (em minutos):
+*/15 * * * * /PATH_PARA_O_LYNX/lynx -nolist -dump http://SEU_SERVIDOR/comunique/index.php/schedule/send > /PATH_PARA_O_COMUNIQUE/historico.php && date >> /PATH_PARA_O_COMUNIQUE/historico.php
+
+Obs: Acesse http://SEU_SERVIDOR/comunique/historico.php caso deseje ter visualizar o relatório do último disparo.
+
+Problemas, sugestões, críticas ou elogios? Contacte-me através do e-mail: lucasrochabr@outlook.com.

@@ -1,0 +1,23 @@
+#carregando
+{
+	filter: alpha(opacity=50);
+	-moz-opacity: .50;
+	opacity: .50;
+	position: absolute;
+	border: 1px solid #f9f9f9;
+	left: 0;
+	top: 0;
+	background: #696969;
+	z-index: 1;
+}
+
+.panel_wrapper {height:250px;}
+.panel_wrapper div.current {height:250px;}
+#pai li
+{
+	list-style: none;
+}
+
+
+* html .panel_wrapper {height:165px;}
+* html .panel_wrapper div.current {height:165px;}
