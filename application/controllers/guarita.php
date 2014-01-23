@@ -19,7 +19,7 @@ class Guarita extends CI_Controller
 			$this->triedLogin = TRUE;
 			$this->load->model('user');
 			$realUser = $this->user->select($possibleUser['name']);
-			if ($realUser->password == $possibleUser['password'])
+			if (is_array($realUser) && $realUser->password == $possibleUser['password'])
 			{
 				//permission granted
 				$this->session->set_userdata('user', $realUser);

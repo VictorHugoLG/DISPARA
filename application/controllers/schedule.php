@@ -158,6 +158,7 @@ class Schedule extends CI_Controller
 					</a>
 				</footer>';
 			$this->email->protocol = 'smtp';
+			$this->email->_smtp_auth = $conf->smtp_auth;
 			//$this->email->cc('another@another-example.com'); 
 			//$this->email->bcc('them@their-example.com'); 
 			$this->email->from($conf->from, $conf->from_name);
