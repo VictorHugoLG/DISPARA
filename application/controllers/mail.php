@@ -198,6 +198,7 @@ class Mail extends CI_Controller
 				array('field' => 'conf[host]', 'label' => 'Servidor', 'rules' => 'required|trim|xss_clean'),
 				array('field' => 'conf[port]', 'label' => 'Porta', 'rules' => 'required|trim|xss_clean|integer'),
 				array('field' => 'conf[from]', 'label' => 'Email remetente', 'rules' => 'required|trim|xss_clean|valid_email'),
+				array('field' => 'conf[password]', 'label' => 'Senha', 'rules' => 'trim|xss_clean'),
 			);
 			$this->form_validation->set_rules($rules);
 			if ($this->form_validation->run())
@@ -211,20 +212,8 @@ class Mail extends CI_Controller
 	        	$data['reply_to_name'] = (!empty($data['reply_to_name'])) ? $data['reply_to_name'] : '';
 	        	$data['smtp_auth'] = (!empty($data['smtp_auth'])) ? $data['smtp_auth'] : 0;
 	        	//die(var_dump($data));
-	        	if ($mail_conf_id == NULL)
-	        	{
-	        		$data['active'] = 0;
-	        		$result = $this->mail_conf->create($data);
-        		}
-        		else
-        		{
-	        		$data['id'] = $this->mail_conf->next_id();
-	        		$result = $this->mail_conf->update($mail_conf_id, $data);
-	        		if ($result)
-	        			$mail_data_id = $data['id'];
-	        		else 
-	        			$this->data['mail_conf'] = $data;
-        		}
+	        	$data['active'] = (!empty($data['active'])) ? $data['active'] : 0; 
+	        	$result = ($mail_conf_id == NULL) ? $this->mail_conf->create($data) : $result = $this->mail_conf->update($mail_conf_id, $data);
         		if ($result)
         			$this->data['success'] = 'Configurações salvas';
         		else
@@ -240,7 +229,6 @@ class Mail extends CI_Controller
 			$this->data['mail_conf'] = array_shift($this->mail_conf->read($mail_conf_id));
         }
 		$this->load_mails();
-		$this->load->library('form_validation');
 		$this->load->view('header', $this->data);
 		$this->load->view('mail_conf_edit', $this->data);
 		$this->load->view('footer', $this->data);

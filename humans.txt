@@ -1,9 +1,9 @@
 **********************************************
 * Desenvolvido por Lucas Teixeira Rocha.     *
 *                                            *
-* Com a colaboracao de: Ricel de Souza Leite,*
-* Robson Ataide, Mauro Andrade, Mauricio     *
-* Andrade e Anderson Pereira.                *
+* Analise/Consultoria: Ricel de Souza Leite, *
+* Gabriel Barros Oliveira, Robson Ataíde,    *
+* Mauro Andrade e Maurício Andrade           *
 *                                            *
 * Esquerdos autorais desde 2013.             *
 **********************************************

@@ -21,10 +21,6 @@
               <label class="control-label" >Responder nome</label>
              <input placeholder="Responder nome" id="reply_to_name" type="text" name="conf[reply_to_name]" value="<?php echo set_value('conf[reply_to_name]'); ?>" ><br />
 
-		
-		
-
-		
           <div class="btn-group">
               <button type="submit" class="btn btn-primary">
                   <i class="icon-save icon-white"></i> Salvar
@@ -82,7 +78,7 @@
                       $("#password").val("'.$mail_conf->password.'");
                       $("#from").val("'.$mail_conf->from.'");
                       $("#from_name").val("'.$mail_conf->from_name.'");
-                                     $("#from").val("'.$mail_conf->from.'");
+                      $("#from").val("'.$mail_conf->from.'");
                       $("#reply_to").val("'.$mail_conf->reply_to.'");
                       $("#reply_to_name").val("'.$mail_conf->reply_to_name.'");';
                     echo ($mail_conf->smtp_auth) ? '$("#smtp_auth").click();' : '';
