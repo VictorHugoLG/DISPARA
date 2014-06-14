@@ -28,12 +28,6 @@ class Schedule extends CI_Controller
 			$file = fopen($filename, 'r');
 			$mail_list = array();
 			$n=0;
-			while (($data = fgetcsv ($file, 10000, ';')) !== false)
-			{
-				$mail_list[$n]['email'] = str_replace('"', '', $data[0]);
-				$mail_list[$n]['name'] = (!empty($data[1])) ? str_replace('"', '', $data[1]) : 'Amigo(a)';
-				$n++;
-			}
 			while (($data = fgetcsv ($file, 10000, ',')) !== false)
 			{
 				$mail_list[$n]['email'] = str_replace('"', '', $data[0]);
@@ -58,21 +52,21 @@ class Schedule extends CI_Controller
 		$this->load->view('footer', $this->data);
 	}
 
+	/**
+	* Recebe o array $mail_list no de contatos para enviar o email
+	* o $mail_list deve vir via POST no seguinte formato: 
+	* {
+	*		user : 'nome_de_usuário_efetuando_a_operação',
+	*		mail_id : 'id_da_campanha',
+	*		mail_list : 
+	*		[
+	*			{ email : 'lucasrocha@fieb.org.br', legacy_id : 'id legado', name : 'Lucas' },
+	*			{ email : 'ricel@fieb.org.br', legacy_id : 'id legado', name : 'Ricel' },
+	*		]
+	* }
+	*/
 	public function add($add = NULL)
 	{
-		/**
-		* Recebe o array $mail_list no de contatos para enviar o email
-		* o $mail_list deve vir via POST no seguinte formato: 
-		* {
-		*		user : 'nome_de_usuário_efetuando_a_operação',
-		*		mail_id : 'id_da_campanha',
-		*		mail_list : 
-		*		[
-		*			{ email : 'lucasrocha@fieb.org.br', legacy_id : 'id legado', name : 'Lucas' },
-		*			{ email : 'ricel@fieb.org.br', legacy_id : 'id legado', name : 'Ricel' },
-		*		]
-		* }
-		*/
 		$this->load->helper('email');
 		$this->load->model('mail_list');
 		if (empty($add))
@@ -85,8 +79,7 @@ class Schedule extends CI_Controller
 			$mail_data_id = $add['mail_id'];
 			$list = $add['mail_list'];
 		}
-        //die(var_dump($list));
-		if (!$mail_data_id)
+        if (!$mail_data_id)
 		{
 	    	$this->data['error'] = 'Erro! falta informar o ID da campanha';
 		}
@@ -100,15 +93,14 @@ class Schedule extends CI_Controller
 			for ($i = 0; $i < $list_len; $i++)
 			{
 				$repeated = $this->mail_list->select($mail_data_id, $list[$i]['email']);
-				//die (var_dump($repeated));
-				if (!filter_var($list[$i]['email'], FILTER_VALIDATE_EMAIL) || !empty($repeated))
+				if (!empty($repeated) || (!is_numeric($list[$i]['email']) && !filter_var($list[$i]['email'], FILTER_VALIDATE_EMAIL)))
 				{
 					unset($list[$i]);
 				}
 				else
 				{
 					$added++;
-					$list[$i]['email'] = explode('@', $list[$i]['email']);
+					$list[$i]['email'] = $this->mail_list->break_addr($list[$i]['email']);
 					$list[$i]['prefix'] = $list[$i]['email'][0];
 					$list[$i]['domain'] = $list[$i]['email'][1];
 					unset($list[$i]['email']);
@@ -118,30 +110,47 @@ class Schedule extends CI_Controller
 					$list[$i]['mail_data_id'] = $mail_data_id;
 				}
 			}
-			//die (var_dump($list));
-	        if (empty($list) || !is_array($list))
+			if (empty($list) || !is_array($list))
 	            $this->data['error'] = 'Erro! lista vazia, inválida ou já foi agendada.';
 			elseif ($this->mail_list->save($list))
-	            $this->data['success'] = "Lista com $added email(s) agendado(s) para a campanha {$mail_data_id}.";
+	            $this->data['success'] = "Lista com $added remetente(s) agendado(s) para a campanha {$mail_data_id}.";
 			else
 	    	    $this->data['error'] = 'Erro.';
 		}
 	}
 
+	/**
+	* Integração com o Jason SMS
+	*/
+	public function jason_sms()
+	{
+		$this->load->model('vw_sms_schedule', '', TRUE);
+		$this->load->model('mail_list', '', TRUE);
+		$tasks = $this->vw_sms_schedule->select();
+		$json = array();
+		foreach ($tasks as $task) {
+			$json[] = array(
+				'message' => str_replace('?nome?', $task->name, $task->sms),
+				'phones' => array($task->phone));
+			$this->mail_list->update_status($task->mail_data_id, $task->phone, 'ENVIADO');
+		}
+		header('Cache-Control: no-cache, must-revalidate');
+		header('Content-type: application/json');
+		die(json_encode($json));
+	}
+
+	/**
+	* Dispara o envio de emails
+	*/
 	public function send()
 	{
-		/**
-		* Dispara o envio de emails
-		*/
 		$this->load->model('vw_mail_schedule', '', TRUE);
 		$this->load->model('mail_conf', '', TRUE);
 		$this->load->model('mail_list', '', TRUE);
 		$this->load->library('email');
         $this->load->helper('url');
 		$conf = $this->mail_conf->get_conf();
-		//die (var_dump($conf));
 		$tasks = $this->vw_mail_schedule->select();
-		//die(var_dump($tasks));
 		$this->data['success'] = '';
 		$this->data['error'] = '';
 		$nadaAFazer = TRUE;
@@ -158,9 +167,7 @@ class Schedule extends CI_Controller
 					</a>
 				</footer>';
 			$this->email->protocol = 'smtp';
-			$this->email->_smtp_auth = $conf->smtp_auth;
-			//$this->email->cc('another@another-example.com'); 
-			//$this->email->bcc('them@their-example.com'); 
+			$this->email->_smtp_auth = $conf->smtp_auth; 
 			$this->email->from($conf->from, $conf->from_name);
 			$this->email->reply_to($conf->reply_to, $conf->reply_to_name);
 			$this->email->wordwrap = FALSE;
@@ -174,7 +181,6 @@ class Schedule extends CI_Controller
 			$this->email->subject($task->subject);
 			$this->email->message($task->html.$footer); 
 			$this->email->set_alt_message('Algo deu errado na leitura do email :(');
-			//die(var_dump($this->mail_list->update_status($task->mail_data_id, $task->email, 'ENVIADO')));
 			if (!empty($task->mail_data_id) && !empty($task->email))
 			{
 				$nadaAFazer = FALSE;

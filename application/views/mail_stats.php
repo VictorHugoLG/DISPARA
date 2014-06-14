@@ -1,12 +1,25 @@
+<?php if ($sms_stats['enviados'] === 0): ?>
+    <font color="red">
+        Atenção! Para ativar o envio de SMS, é necessário adquir o aplicativo <a href="https://play.google.com/store/apps/details?id=br.com.sisau.jasonsms" target="_blank">Jason SMS para android!</a>
+    </font>
+<?php endif; ?>
+<p>
+    A sua URL de integração com o <a href="https://play.google.com/store/apps/details?id=br.com.sisau.jasonsms" target="_blank">Jason SMS</a> é: <?php echo site_url('schedule/jason_sms'); ?> (NÃO acesse esta URL através do seu navegador).
+</p>
+<br>
 <div class="row">
-    <div id="chart_column" class="span6"></div>
-    <div id="chart_pizza" class="span6"></div>
+    <div class="col-md-6">
+        <div id="chart_column" class="span6"></div>
+    </div>
+    <div class="col-md-6">
+        <div id="chart_pizza" class="span6"></div>
+    </div>
 </div>
 
 <!-- Highcharts JS -->
 <?php
+    //email
     $total = $stats['agendados'] + $stats['enviados'] + $stats['lidos'] + $stats['rejeitados'] + $stats['falhas'];
-    //echo $total;
     if ($total)
     {
         $chartsData =  "[['Agendados', ".(100*$stats['agendados']/$total).'],';
@@ -17,11 +30,23 @@
     }
     else
         $chartsData =  "[['Agendados', 0], ['Enviados', 0], ['Lidos', 0], ['Rejeitados', 0], ['Falhas', 0]]";
+    //sms
+    $total_sms = $sms_stats['agendados'] + $sms_stats['enviados'];
+    if ($total_sms)
+    {
+        $smsChartsData =  "[['Agendados', ".(100*$sms_stats['agendados']/$total_sms).'],';
+        $smsChartsData .= "['Enviados', ".(100*$sms_stats['enviados']/$total_sms).']]';
+    }
+    else
+        $smsChartsData =  "[['Agendados', 0], ['Enviados', 0]]";
+     
 ?>
 <script type="text/javascript" src="<?php echo base_url('resources/js/highcharts/js/highcharts.js'); ?>"></script>
 <script type="text/javascript">
     $(function () {
         var detail_lnk = "<?php echo site_url('mail/stats/'.$mail_id); ?>";
+        
+        //mail chart
         $('#chart_column').highcharts({
             chart: {
                 type: 'column'
@@ -76,6 +101,7 @@
             }]
         });
 
+        //sms chart
         $('#chart_pizza').highcharts({
             chart: {
                 plotBackgroundColor: null,
@@ -86,7 +112,7 @@
                 enabled: false
             },
             title: {
-                text: 'Situação da fila de emails'
+                text: 'Status dos SMS'
             },
             tooltip: {
                 pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -105,8 +131,8 @@
             },
             series: [{
                 type: 'pie',
-                name: 'Fila de emails',
-                data:  <?php echo $chartsData; ?>
+                name: 'Fila de SMS',
+                data:  <?php echo $smsChartsData; ?>
             }]
         });
     });

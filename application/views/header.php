@@ -37,18 +37,18 @@
 						<ul class="dropdown-menu">
 							<li><a href="'.site_url('mail/schedule/'.$row->id).'"><i class="icon-calendar"></i> Agendar envio</a></li>
 							<li><a href="'.site_url('mail/copy/'.$row->id).'"><i class="icon-plus"></i> Clonar</a></li>
-							<li><a href="'.site_url('mail/edit/'.$row->id).'"><i class="icon-edit"></i> Editar email</a></li>
+							<li><a href="'.site_url('mail/edit/'.$row->id).'"><i class="icon-edit"></i> Editar</a></li>
 							<li><a href="'.site_url('mail/stats/'.$row->id).'"><i class="icon-bar-chart"></i> Relatório de envio</a></li>
 						</ul>
 					</li>';
 			}
 			echo '
 					</ul>
-                                <a href="'.site_url('mail/stats').'" class="btn btn-inverse"> <i class="icon-bar-chart icon-white"></i> Relatório geral </a>
-                                <a href="'.site_url('mail/image').'" class="btn btn-inverse" target="_blank"> <i class="icon-picture icon-white"></i> Imagens no servidor </a>
-								<a href="'.site_url('mail/conf_list').'" class="btn btn-inverse"><i class="icon-cog"></i> Configuração SMTP </a>
-								<a href="'.site_url('guarita/logoff').'" class="btn btn-inverse"><i class="icon-off"></i> Sair </a>
-                        	</div><br><br>';
+                    <a href="'.site_url('mail/stats').'" class="btn btn-inverse"> <i class="icon-bar-chart icon-white"></i> Relatório geral </a>
+                    <a href="'.site_url('mail/image').'" class="btn btn-inverse"> <i class="icon-picture icon-white"></i> Imagens no servidor </a>
+					<a href="'.site_url('mail/conf_list').'" class="btn btn-inverse"><i class="icon-cog"></i> Configuração SMTP </a>
+					<a href="'.site_url('guarita/logoff').'" class="btn btn-inverse"><i class="icon-off"></i> Sair </a>
+            	</div><br><br>';
 		} 
 		?>
 		<?php if (!empty($error)): ?>	

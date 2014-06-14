@@ -34,24 +34,22 @@ class Guarita extends CI_Controller
 
     public function logoff()
     {
-        $this->session->sess_destroy();
         $reincidente = ($this->triedLogin) ? '/reincidente' : '';
         $unauthorized = TRUE;
         if ($this->uri->slash_segment(1))
         {
             $segment = $this->uri->slash_segment(1).$this->uri->segment(2);
+            if ($segment == 'guarita/logoff')
+                $this->session->sess_destroy();
             $permitedSegments = array(
                 'mail/login', 
                 'mail/select_options', 
                 'schedule/feedback', 
                 'schedule/send', 
-                'schedule/reject');
+                'schedule/reject',
+                'schedule/jason_sms');
             if (in_array($segment, $permitedSegments))
-            {
-                if ($segment != 'mail/login')
-                    $this->session->sess_destroy();
                 $unauthorized = FALSE;
-            }
         }
         if ($unauthorized)
         {

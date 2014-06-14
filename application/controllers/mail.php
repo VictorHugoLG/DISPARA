@@ -33,30 +33,28 @@ class Mail extends CI_Controller
 		$this->edit($id);
 	}
 	
+	/**
+	* Carrega tela de edição de emails
+	*/
 	public function edit($id = NULL)
 	{
-		/**
-		* Carrega tela de edição de emails
-		*/
 		$this->load->library('form_validation');
-		//die(set_value('mail[name]'));
 		$this->load_mails();
         if (NULL != $id)
         {
             $this->data['mail_data'] = $this->mail_data->select($id);
             $this->data['warning'] = $this->burla_spam($this->data['mail_data']);
         }
-        //die (var_dump($this->data['mail_data']));
         $this->load->view('header', $this->data);
         $this->load->view('mail_edit', $this->data);
         $this->load->view('footer', $this->data);
 	}
 
+	/**
+	* Carrega tela de agendamento de emails
+	*/
 	public function schedule($id = NULL)
 	{
-		/**
-		* Carrega tela de agendamento de emails
-		*/
 		$this->load->library('form_validation');
 		$this->load_mails();
         if (empty($id))
@@ -72,36 +70,37 @@ class Mail extends CI_Controller
         }
 	}
 	
+	/**
+	* Recebe dados via POST e faz insert ou update na tabela mail_data
+	*/
 	public function save()
 	{
-		/**
-		* Recebe dados via POST e faz insert ou update na tabela mail_data
-		*/
 		$this->load->library('form_validation');
 		$rules = array(
 			array('field' => 'mail[name]', 'label' => 'Nome da campanha', 'rules' => 'required|trim|xss_clean'),
-			array('field' => 'mail[subject]', 'label' => 'Assunto do email', 'rules' => 'required|trim|xss_clean'),
 			array('field' => 'mail[dt_begin]', 'label' => 'Data inicial', 'rules' => 'required|trim|xss_clean'),
 			array('field' => 'mail[dt_end]', 'label' => 'Data final', 'rules' => 'required|trim|xss_clean'),
-			array('field' => 'mail[html]', 'label' => 'Corpo do email', 'rules' => 'required|trim|xss_clean'),
+			array('field' => 'mail[subject]', 'label' => 'Assunto do email', 'rules' => 'trim|xss_clean'),
+			array('field' => 'mail[html]', 'label' => 'Corpo do email', 'rules' => 'trim|xss_clean'),
+			array('field' => 'mail[sms]', 'label' => 'Mensagem SMS', 'rules' => 'trim|xss_clean'),
 		);
 		$this->form_validation->set_rules($rules);
 		if ($this->form_validation->run() == TRUE)
 		{
 			$data = $this->input->post('mail');
 			//die(var_dump($data));
-			$data['changed_by'] = USER;
+			$data['changed_by'] = DEFAULT_USER;
 			$data['dttm_changed'] = date('Y-m-d H:m:s');
 			if (strpos($data['html'], '../../resources'))
 				$data['html'] = str_replace('../../resources/img', base_url('resources/img'), $data['html']);
-			elseif (strpos($data['html'], '../resources'))
+			else if (strpos($data['html'], '../resources'))
 				$data['html'] = str_replace('../resources/img', base_url('resources/img'), $data['html']);
 			$this->load->model('mail_data', '', TRUE);
 			$result = $this->mail_data->save($data);
 			if ($result)
-				$this->data['success'] = 'O email foi salvo';
+				$this->data['success'] = 'A campanha foi salva';
 			else
-				$this->data['error'] = '<p class="text-error"><i class="icon-exclamation-sign"></i> <strong>Erro ao tentar salvar o email</strong></p>';
+				$this->data['error'] = '<p class="text-error"><i class="icon-exclamation-sign"></i> <strong>Erro ao tentar salvar a campanha</strong></p>';
 			$this->edit($result);
 		}
 		else
@@ -111,11 +110,11 @@ class Mail extends CI_Controller
 		}
 	}
 
+	/**
+    * Exibe estatisticas sobre o envio de emails
+    */
 	public function stats($mail_data_id = 0, $status = '')
 	{
-            /**
-            * Exibe estatisticas sobre o envio de emails
-            */
             $this->load->model('mail_list', '', TRUE);
             $this->data['mail_id'] = $mail_data_id;
             $status = strtoupper($status);
@@ -123,21 +122,21 @@ class Mail extends CI_Controller
             {
             	$status = str_replace('S', '', $status);
             }
-            //die($status);
-            $this->data['stats'] = $this->mail_list->stats($mail_data_id, $status);
+            $statistics = $this->mail_list->stats($mail_data_id, $status);
+            $this->data['stats'] = $statistics['email'];
+            $this->data['sms_stats'] = $statistics['sms'];
             $this->load_mails();
-            $page = ($status) ? 'mail_stats_detailed' : 'mail_stats';
-            //die(var_dump($this->data['stats']));
+            $page = (!empty($status)) ? 'mail_stats_detailed' : 'mail_stats';
             $this->load->view('header', $this->data);
             $this->load->view($page, $this->data);
             $this->load->view('footer', $this->data);
 	}
-        
+    
+    /**
+    * Exibe imagens no servidor
+    */
     public function image()
 	{
-            /**
-            * Exibe imagens no servidor
-            */
             $this->load->helper('file');
             $imgs = get_filenames('resources/img/');
             foreach ($imgs as $name)
@@ -233,12 +232,12 @@ class Mail extends CI_Controller
 		$this->load->view('mail_conf_edit', $this->data);
 		$this->load->view('footer', $this->data);
 	}
-        
+     
+    /**
+	* Retorna tags <option> para todos as camapanhas (para integração)
+	*/   
     public function select_options()
 	{
-		/**
-		* Retorna tags <option> para todos emails (util para AJAX)
-		*/
 		$this->load_mails();
 		$options = '';
 		foreach ($this->data['mails'] as $mail)
@@ -246,13 +245,13 @@ class Mail extends CI_Controller
 		echo $options;
 	}
 
-	private function load_mails()
+	protected function load_mails()
 	{
 		$this->load->model('mail_data', '', TRUE);
         $this->data['mails'] = $this->mail_data->select();
 	}
 
-    private function burla_spam($mail_data)
+    protected function burla_spam($mail_data)
     {
 	    //Palavras a serem evitadas no corpo e assunto
 	    $badStrings = array (
@@ -337,7 +336,7 @@ class Mail extends CI_Controller
 	    return $correcao;
     }
 
-	private function retira_acentos($str, $htmlentities = true,$enc = "UTF-8") {
+	protected function retira_acentos($str, $htmlentities = true,$enc = "UTF-8") {
         $acentos = array(
             'a' => '/&agrave;|&aacute;|&acirc;|&atilde;|&auml;|&aring;/',
             'c' => '/&ccedil;/',

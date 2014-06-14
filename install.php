@@ -43,13 +43,14 @@
 		//Estrutura da tabela `mail_data`
 		'CREATE TABLE IF NOT EXISTS `mail_data` (
 		  `id` int(11) NOT NULL,
-		  `html` varchar(1000) NOT NULL,
-		  `subject` varchar(100) NOT NULL,
+		  `html` varchar(10000) DEFAULT NULL,
+		  `subject` varchar(100) DEFAULT NULL,
 		  `dt_begin` date NOT NULL,
 		  `dt_end` date NOT NULL,
 		  `dttm_changed` datetime NOT NULL,
 		  `changed_by` varchar(50) NOT NULL,
 		  `name` varchar(100) NOT NULL,
+		  `sms` varchar(1000) DEFAULT NULL,
 		  PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;',
 		//Estrutura da tabela `mail_list`
@@ -72,17 +73,27 @@
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;',
 		//Extraindo dados da tabela `user`
 		"INSERT INTO `user` (`name`, `password`) VALUES('$user', '$password');",
-		//Estrutura stand-in para visualizar `vw_mail_schedule`
+		//Estrutura stand-in para a view `vw_mail_schedule`
 		'CREATE TABLE IF NOT EXISTS `vw_mail_schedule` (
-		  `mail_data_id` int(11)
-		  ,`html` varchar(1000)
-		  ,`subject` varchar(100)
-		  ,`email` varchar(101)
-		  ,`name` varchar(100)
+		`mail_data_id` int(11)
+		,`html` varchar(10000)
+		,`subject` varchar(100)
+		,`email` varchar(101)
+		,`name` varchar(100)
 		);',
-		//Estrutura para visualizar `vw_mail_schedule`
+		//Estrutura stand-in para a view `vw_sms_schedule`
+		'CREATE TABLE IF NOT EXISTS `vw_sms_schedule` (
+		`mail_data_id` int(11)
+		,`sms` varchar(1000)
+		,`phone` varchar(100)
+		,`name` varchar(100)
+		);',
+		//Estrutura para a view `vw_mail_schedule`
 		'DROP TABLE IF EXISTS `vw_mail_schedule`;',
-		'CREATE VIEW `vw_mail_schedule` AS select `mail_data`.`id` AS `mail_data_id`,`mail_data`.`html` AS `html`,`mail_data`.`subject` AS `subject`,concat(`mail_list`.`prefix`,\'@\',`mail_list`.`domain`) AS `email`,`mail_list`.`name` AS `name` from (`mail_data` join `mail_list`) where ((`mail_data`.`id` = `mail_list`.`mail_data_id`) and (`mail_data`.`dt_begin` <= curdate()) and (`mail_data`.`dt_end` > curdate()) and (`mail_list`.`status` = \'AGENDADO\') and (not(concat(`mail_list`.`prefix`,\'@\',`mail_list`.`domain`) in (select concat(`mail_list`.`prefix`,\'@\',`mail_list`.`domain`) from `mail_list` where (`mail_list`.`status` = \'REJEITADO\'))))) group by `mail_list`.`domain` limit 9;');
+		"CREATE VIEW `vw_mail_schedule` AS select `mail_data`.`id` AS `mail_data_id`,`mail_data`.`html` AS `html`,`mail_data`.`subject` AS `subject`,concat(`mail_list`.`prefix`,'@',`mail_list`.`domain`) AS `email`,`mail_list`.`name` AS `name` from (`mail_data` join `mail_list`) where ((`mail_data`.`id` = `mail_list`.`mail_data_id`) and (`mail_data`.`dt_begin` <= curdate()) and (`mail_data`.`dt_end` > curdate()) and (`mail_list`.`status` = 'AGENDADO') and (not(concat(`mail_list`.`prefix`,'@',`mail_list`.`domain`) in (select concat(`mail_list`.`prefix`,'@',`mail_list`.`domain`) from `mail_list` where (`mail_list`.`status` = 'REJEITADO')))) and (not((`mail_list`.`domain` regexp '[[:digit:]]')))) group by `mail_list`.`domain` limit 9;",
+		//Estrutura para a view `vw_sms_schedule`
+		'DROP TABLE IF EXISTS `vw_sms_schedule`;',
+		"CREATE VIEW `vw_sms_schedule` AS select `mail_data`.`id` AS `mail_data_id`,`mail_data`.`sms` AS `sms`,concat(`mail_list`.`prefix`,`mail_list`.`domain`) AS `phone`,`mail_list`.`name` AS `name` from (`mail_data` join `mail_list`) where ((`mail_data`.`id` = `mail_list`.`mail_data_id`) and (`mail_data`.`dt_begin` <= curdate()) and (`mail_data`.`dt_end` > curdate()) and (`mail_list`.`status` = 'AGENDADO') and (`mail_list`.`domain` regexp '[[:digit:]]')) limit 9;");
 	//connect
 	$mysqli = new mysqli($db['default']['hostname'], $db['default']['username'], $db['default']['password'], $db['default']['database']);
 	//check connection 

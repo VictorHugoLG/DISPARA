@@ -1,18 +1,18 @@
 	<form method="post" action="<?php echo site_url('mail/save'); ?>">
         <h4>Editor de campanhas</h4>
-		<p>
-			<input placeholder="Nome da campanha" id="name" type="text" name="mail[name]" value="<?php echo set_value('mail[name]'); ?>" required>
-			<input placeholder="Assunto do email" id="subject" type="text" name="mail[subject]" value="<?php echo set_value('mail[subject]'); ?>" required>
-			<br>
-			<input placeholder="Data inicial" id="dt_begin" type="text" class="date" name="mail[dt_begin]" value="<?php echo set_value('mail[dt_begin]'); ?>" required>
-			<input placeholder="Data final" id="dt_end" type="text" class="date" name="mail[dt_end]" value="<?php echo set_value('mail[dt_end]'); ?>" required>
-		</p>
+	    <input placeholder="Nome da campanha" id="name" type="text" name="mail[name]" value="<?php echo set_value('mail[name]'); ?>" required>
+        <br>
+        <input placeholder="Data inicial" id="dt_begin" type="text" class="date" name="mail[dt_begin]" value="<?php echo set_value('mail[dt_begin]'); ?>" required>
+		<br>
+        <input placeholder="Data final" id="dt_end" type="text" class="date" name="mail[dt_end]" value="<?php echo set_value('mail[dt_end]'); ?>" required>
+    	<br>
+        <textarea id="sms" placeholder="Mensagem SMS" name="mail[sms]"><?php echo set_value('mail[sms]'); ?></textarea>
+        <br>
+        <input placeholder="Assunto do email" id="subject" type="text" name="mail[subject]" value="<?php echo set_value('mail[subject]'); ?>">
 
 		<!-- Gets replaced with TinyMCE, remember HTML in a textarea should be encoded -->
 		<div>
-			<textarea id="html" name="mail[html]" style="width: 100%" required>
-				<?php echo htmlspecialchars_decode(set_value('mail[html]')); ?>
-			</textarea>
+			<textarea id="html" class="mceEditor" name="mail[html]" style="width: 100%"><?php echo htmlspecialchars_decode(set_value('mail[html]')); ?></textarea>
 		</div>
 
 		<br>
@@ -68,7 +68,8 @@
                 tinyMCE.init({
                         // General options
                         language : "pt",
-                        mode : "textareas",
+                        mode : "specific_textareas",
+                        editor_selector : "mceEditor",
                         theme : "advanced",
                         plugins : "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave,visualblocks,tretaimgupload",
 
@@ -122,7 +123,6 @@
         <a href="javascript:;" onclick="tinyMCE.execCommand('mceReplaceContent',false,'<b>{$selection}</b>');return false;">[Replace selection]</a>
         -->
         <!-- /TinyMCE -->
-
         <?php
             if (!empty($mail_data))
             {
@@ -136,6 +136,7 @@
                             $("#subject").val("'.$mail_data->subject.'");
                             $("#dt_begin").val("'.$mail_data->dt_begin.'");
                             $("#dt_end").val("'.$mail_data->dt_end.'");
+                            $("#sms").val("'.$mail_data->sms.'");
                         });
                     </script>';
                 if (empty($copy))
