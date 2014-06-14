@@ -1,6 +1,6 @@
 <?php if ($sms_stats['enviados'] === 0): ?>
     <font color="red">
-        Atenção! Para ativar o envio de SMS, é necessário adquir o aplicativo <a href="https://play.google.com/store/apps/details?id=br.com.sisau.jasonsms" target="_blank">Jason SMS para android!</a>
+        Atenção! Para ativar o envio de SMS, é necessário adquir o aplicativo <a href="https://play.google.com/store/apps/details?id=br.com.sisau.jasonsms" target="_blank">Jason SMS para Android!</a>
     </font>
 <?php endif; ?>
 <p>
