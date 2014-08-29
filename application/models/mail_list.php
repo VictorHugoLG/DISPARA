@@ -68,7 +68,9 @@ class Mail_list extends CI_Model
 			}
 		}
 		else
+		{
 			$result = $mail_list;
+		}
 		return $result;
 	}
 

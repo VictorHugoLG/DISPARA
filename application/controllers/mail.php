@@ -123,8 +123,13 @@ class Mail extends CI_Controller
             	$status = str_replace('S', '', $status);
             }
             $statistics = $this->mail_list->stats($mail_data_id, $status);
-            $this->data['stats'] = $statistics['email'];
-            $this->data['sms_stats'] = $statistics['sms'];
+            if (!$status)
+            {
+            	$this->data['stats'] = $statistics['email'];
+            	$this->data['sms_stats'] = $statistics['sms'];
+            }
+            else
+            	$this->data['stats'] = $statistics;
             $this->load_mails();
             $page = (!empty($status)) ? 'mail_stats_detailed' : 'mail_stats';
             $this->load->view('header', $this->data);
