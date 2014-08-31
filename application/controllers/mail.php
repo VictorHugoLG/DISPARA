@@ -215,7 +215,7 @@ class Mail extends CI_Controller
 	        	$data['reply_to'] = (!empty($data['reply_to'])) ? $data['reply_to'] : '';
 	        	$data['reply_to_name'] = (!empty($data['reply_to_name'])) ? $data['reply_to_name'] : '';
 	        	$data['smtp_auth'] = (!empty($data['smtp_auth'])) ? $data['smtp_auth'] : 0;
-	        	//die(var_dump($data));
+	        	$data['smtp_secure'] = (!empty($data['smtp_secure'])) ? $data['smtp_secure'] : NULL;
 	        	$data['active'] = (!empty($data['active'])) ? $data['active'] : 0; 
 	        	$result = ($mail_conf_id == NULL) ? $this->mail_conf->create($data) : $result = $this->mail_conf->update($mail_conf_id, $data);
         		if ($result)

@@ -8,6 +8,8 @@
            <label class="control-label" > Porta </label><input style="width:50px;" placeholder="Porta" id="port"  type="text" name="conf[port]"  value="<?php echo set_value('conf[port]'); ?>" required>
 			<br>
           	<label class="checkbox"> Usar autenticação SMTP <input  type="checkbox" name="conf[smtp_auth]" id="smtp_auth" value="1"></label> 
+            <label class="control-label">Tipo de encriptação</label> 
+            <input placeholder="ssl, tls e etc." id="smtp_secure" type="text" name="conf[smtp_secure]" value="<?php echo set_value('conf[smtp_secure]'); ?>">
              <label class="control-label">Usuário</label> 
             <input placeholder="Usuário" id="username" type="text" name="conf[username]" value="<?php echo set_value('conf[username]'); ?>">
             <label class="control-label" >Senha</label>
