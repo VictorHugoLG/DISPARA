@@ -17,10 +17,8 @@
 9- Crie a seguinte linha no crontab, substituindo o 15 pelo intervalo desejado entre os disparos (em minutos):
 */15 * * * * /PATH_PARA_O_LYNX/lynx -nolist -dump http://SEU_SERVIDOR/comunique/index.php/schedule/send > /PATH_PARA_O_COMUNIQUE/historico.php && date >> /PATH_PARA_O_COMUNIQUE/historico.php
 
-Obs1: Para agendar uma campanha, basta enviar um arquivo contendo um endereço de e-mail por linha através do menu Campanhas > X > Agendar envio
+Obs1: Acesse http://SEU_SERVIDOR/comunique/historico.php caso deseje visualizar o relatório do último disparo realizado.
 
-Obs2: Acesse http://SEU_SERVIDOR/comunique/historico.php caso deseje visualizar o relatório do último disparo realizado.
-
-Obs3: Caso queira retirar o "index.php" da URL, troque 'index.php' por  '' na linha 29 do arquivo comunique/application/config/config.php.
+Obs2: Caso queira retirar o "index.php" da URL, troque 'index.php' por  '' na linha 29 do arquivo comunique/application/config/config.php.
 
 Problemas, sugestões, críticas ou elogios? Contacte-me através do e-mail: lucasrochabr@outlook.com.
